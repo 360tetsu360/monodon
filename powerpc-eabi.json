@@ -1,0 +1,24 @@
+{
+  "arch": "powerpc",
+  "cpu": "750",
+  "data-layout": "E-m:e-p:32:32-i64:64-n32",
+  "env": "newlib",
+  "exe-suffix": ".elf",
+  "executables": true,
+  "has-elf-tls": false,
+  "has-rpath": true,
+  "llvm-target": "powerpc-unknown-eabi",
+  "linker": "powerpc-eabi-gcc",
+  "linker-flavor": "gcc",
+  "linker-is-gnu": true,
+  "panic-strategy": "abort",
+  "pre-link-args": {
+    "gcc": ["-m32", "-meabi", "-mhard-float"]
+  },
+  "relocation-model": "static",
+  "target-c-int-width": "32",
+  "target-endian": "big",
+  "target-family": "unix",
+  "target-mcount": "_mcount",
+  "target-pointer-width": "32"
+}

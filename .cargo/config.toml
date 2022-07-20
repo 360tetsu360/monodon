@@ -1,0 +1,3 @@
+[build]
+target = "powerpc-eabi.json"
+
