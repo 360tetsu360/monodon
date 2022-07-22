@@ -1,3 +1,5 @@
 [build]
-target = "powerpc-eabi.json"
+target = "gekko.json"
 
+[unstable]
+build-std = ["core"]
