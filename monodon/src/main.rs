@@ -2,7 +2,7 @@
 #![no_main]
 #![feature(asm_experimental_arch)]
 
-use core::{panic::PanicInfo, arch::{global_asm}};
+use core::{arch::global_asm, panic::PanicInfo};
 
 global_asm!(include_str!("init.s"));
 

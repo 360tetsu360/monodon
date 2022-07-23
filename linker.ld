@@ -4,7 +4,7 @@ OUTPUT_ARCH(powerpc:common);
 ENTRY(_start)
 
 MEMORY {
-  ROM (xr): ORIGIN = 0x81600020, LENGTH = 64K /*Not the correct length, but for testing purposes.*/
+  ROM (xr): ORIGIN = 0x80003100, LENGTH = 64K /*Not the correct length, but for testing purposes.*/
 }
 
 SECTIONS {
