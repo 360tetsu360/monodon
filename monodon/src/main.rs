@@ -6,6 +6,12 @@ use core::{arch::global_asm, panic::PanicInfo};
 
 global_asm!(include_str!("init.s"));
 
+/*
+extern "C" fn main() {
+
+}
+*/
+
 #[panic_handler]
 fn panic_handler(_: &PanicInfo) -> ! {
     loop {}

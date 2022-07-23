@@ -321,7 +321,6 @@
 .set  PPC_CACHE_ALIGNMENT,32
 
 .global _start
-
 _start :
   b _startup
   .long	0x5f617267
@@ -365,3 +364,24 @@ init_gprs :
 	li      r31,0
 
 init_fprs : 
+
+
+	.globl __realmode
+__realmode:
+	clrlwi	r3,r3,2
+	mtsrr0	r3
+	mfmsr	r3
+	rlwinm	r3,r3,0,28,25
+	mtsrr1	r3
+	rfi
+
+	.globl __configBATS
+__configBATS:
+	lis		r3,0x0011
+	ori		r3,r3,0x0c64
+	mtspr	HID0,r3
+	isync
+
+  li		r0,0
+	mtspr	IBAT0U,r0; mtspr	IBAT1U,r0; mtspr	IBAT2U,r0; mtspr	IBAT3U,r0
+	mtspr	DBAT0U,r0; mtspr	DBAT1U,r0; mtspr	DBAT2U,r0; mtspr	DBAT3U,r0
