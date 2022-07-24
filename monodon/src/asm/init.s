@@ -16,8 +16,19 @@ __argv:
 	.long 0		# end address of argv
 
 _startup:
+	bl _init_bats
   bl _init_grps
+	bl _init_hardware
+	bl _init_system
 	
+_init_bats:
+	mflr	%r31
+	oris	%r31,%r31,0x8000
+	lis		%r3,__configBATS@h
+	ori		%r3,%r3,__configBATS@l
+	bl		__realmode
+	mtlr	%r31
+	blr
 
 _init_grps:
   # reset all grp's to 0.
@@ -72,12 +83,35 @@ _init_hardware:
 	mtmsr   %r3
 
 	mflr    %r31
-	# bl 			_init_ps
+  bl 			_init_ps
 	bl      _init_fprs
 	mtlr    %r31
 	blr
 
-# _init_ps:
+_init_ps:
+	mflr	%r0
+	stw		%r0,4(%r1)
+	stwu	%r1,-8(%r1)
+	mfspr	%r3,HID2
+	oris	%r3,%r3,0xA000
+	mtspr	HID2,%r3
+	isync
+	bl		ICFlashInvalidate
+	sync
+	li		%r3,0
+	mtspr	GQR0,%r3
+	mtspr	GQR1,%r3
+	mtspr	GQR2,%r3
+	mtspr	GQR3,%r3
+	mtspr	GQR4,%r3
+	mtspr	GQR5,%r3
+	mtspr	GQR6,%r3
+	mtspr	GQR7,%r3
+	isync
+	lwz		%r0,12(%r1)
+	addi	%r1,%r1,8
+	mtlr	%r0
+	blr
 
 _init_fprs:
 	mfspr	%r3,920
@@ -160,4 +194,59 @@ _init_fprs:
 	mtfsf   255,fr0
 
 	# Return
+	blr
+
+_init_cache:
+	mflr    %r0
+	stw     %r0, 4(%r1)
+	stwu    %r1, -16(%r1)
+	stw     %r31, 12(%r1)
+
+	mfspr   %r3,HID0
+	rlwinm. %r0,%r3, 0, 16, 16	// Check if the Instruction Cache has been enabled or not.
+	bne     ICEnabled
+	bl		ICEnable
+
+_init_system:
+	mflr    %r0
+	stw     %r0, 4(%r1)
+	stwu    %r1, -24(%r1)
+	stmw	%r29, 12(%r1)
+
+	# Disable interrupts!
+	mfmsr   %r3
+	rlwinm  %r4,%r3,0,17,15
+	rlwinm  %r4,%r4,0,26,24
+	mtmsr   %r4
+
+	# Clear various SPR's
+	li      %r3,0
+	mtspr   952, %r3
+	mtspr   956, %r3
+	mtspr   953, %r3
+	mtspr   954, %r3
+	mtspr   957, %r3
+	mtspr   958, %r3
+	isync
+
+	# Disable Speculative Bus Accesses to non-guarded space from both caches.
+	mfspr   %r3, HID0
+	ori     %r3, %r3, 0x0200
+	mtspr   HID0, %r3
+	isync
+	
+	# Set the Non-IEEE mode in the FPSCR
+	mtfsb1  29
+	
+	# Disable Write Gather Pipe
+	mfspr   %r3,HID2 # (HID2)
+	rlwinm  %r3, %r3, 0, 2, 0	
+	mtspr   HID2,%r3 # (HID2)
+	isync
+	
+	# Restore the non-volatile registers to their previous values and return.
+	lwz     %r0, 28(%r1)
+	lmw			%r29,12(%r1)
+	addi    %r1, %r1, 24
+	mtlr    %r0
 	blr
