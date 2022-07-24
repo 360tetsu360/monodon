@@ -1,92 +1,5 @@
 .text
 .section .init
-
-# Define
-
-# Condition Register Bit Fields
-.set 	cr0,0
-.set 	cr1,1
-.set 	cr2,2
-.set 	cr3,3
-.set 	cr4,4
-.set 	cr5,5
-.set 	cr6,6
-.set 	cr7,7
-
-# Floating Point Registers (FPRs)
-.set 	fr0,0
-.set 	fr1,1
-.set 	fr2,2
-.set 	fr3,3
-.set 	fr4,4
-.set 	fr5,5
-.set 	fr6,6
-.set 	fr7,7
-.set 	fr8,8
-.set 	fr9,9
-.set 	fr10,10
-.set 	fr11,11
-.set 	fr12,12
-.set 	fr13,13
-.set 	fr14,14
-.set 	fr15,15
-.set 	fr16,16
-.set 	fr17,17
-.set 	fr18,18
-.set 	fr19,19
-.set 	fr20,20
-.set 	fr21,21
-.set 	fr22,22
-.set 	fr23,23
-.set 	fr24,24
-.set 	fr25,25
-.set 	fr26,26
-.set 	fr27,27
-.set 	fr28,28
-.set 	fr29,29
-.set 	fr30,30
-.set 	fr31,31
-
-# AltiVec Registers (VPRs)
-.set	v0,0
-.set	v1,1
-.set	v2,2
-.set	v3,3
-.set	v4,4
-.set	v5,5
-.set	v6,6
-.set	v7,7
-.set	v8,8
-.set	v9,9
-.set	v10,10
-.set	v11,11
-.set	v12,12
-.set	v13,13
-.set	v14,14
-.set	v15,15
-.set	v16,16
-.set	v17,17
-.set	v18,18
-.set	v19,19
-.set	v20,20
-.set	v21,21
-.set	v22,22
-.set	v23,23
-.set	v24,24
-.set	v25,25
-.set	v26,26
-.set	v27,27
-.set	v28,28
-.set	v29,29
-.set	v30,30
-.set	v31,31
-
-# TODO 
-# VSX Registers (VSRs)
-# SPE Registers (EVPRs)
-
-
-.set MSR_FP,0x00002000 
 	
 .global _start
 
@@ -153,8 +66,98 @@ _init_grps:
 	blr
 
 _init_hardware:
-# Enable the Floating Point Registers
+	# enable the fpr's
 	mfmsr   %r3
 	ori     %r3,%r3,MSR_FP
 	mtmsr   %r3
+
+	mflr    %r31
+	# bl 			_init_ps
+	bl      _init_fprs
+	mtlr    %r31
+	blr
+
+# _init_ps:
+
+_init_fprs:
+	mfspr	%r3,920
+	extrwi.	%r3,%r3,1,2
+	beq		1f
+
+	# Clear all of the PS FPR's to 0
+	lis		%r3,zeroPS@ha
+	addi	%r3,%r3,zeroPS@l
+	lq    %r0,0(%r3)
+
+	# move register
+	.long 0x10200090 # ps_mr   f1,f0
+	.long 0x10400090 # ps_mr   f2,f0
+	.long 0x10600090 # ps_mr   f3,f0
+	.long 0x10800090 # ps_mr   f4,f0
+	.long 0x10a00090 # ps_mr   f5,f0
+	.long 0x10c00090 # ps_mr   f6,f0
+	.long 0x10e00090 # ps_mr   f7,f0
+	.long 0x11000090 # ps_mr   f8,f0
+	.long 0x11200090 # ps_mr   f9,f0
+	.long 0x11400090 # ps_mr   f10,f0
+	.long 0x11600090 # ps_mr   f11,f0
+	.long 0x11800090 # ps_mr   f12,f0
+	.long 0x11a00090 # ps_mr   f13,f0
+	.long 0x11c00090 # ps_mr   f14,f0
+	.long 0x11e00090 # ps_mr   f15,f0
+	.long 0x12000090 # ps_mr   f16,f0
+	.long 0x12200090 # ps_mr   f17,f0
+	.long 0x12400090 # ps_mr   f18,f0
+	.long 0x12600090 # ps_mr   f19,f0
+	.long 0x12800090 # ps_mr   f20,f0
+	.long 0x12a00090 # ps_mr   f21,f0
+	.long 0x12c00090 # ps_mr   f22,f0
+	.long 0x12e00090 # ps_mr   f23,f0
+	.long 0x13000090 # ps_mr   f24,f0
+	.long 0x13200090 # ps_mr   f25,f0
+	.long 0x13400090 # ps_mr   f26,f0
+	.long 0x13600090 # ps_mr   f27,f0
+	.long 0x13800090 # ps_mr   f28,f0
+	.long 0x13a00090 # ps_mr   f29,f0
+	.long 0x13c00090 # ps_mr   f30,f0
+	.long 0x13e00090 # ps_mr   f31,f0
+		
+	# clear all of the fpr's to 0
+1:	
+  lis	    %r3,zeroF@ha
+	lfd	    fr0,zeroF@l(%r3)
+	fmr     fr1,fr0
+	fmr     fr2,fr0
+	fmr     fr3,fr0
+	fmr     fr4,fr0
+	fmr     fr5,fr0
+	fmr     fr6,fr0
+	fmr     fr7,fr0
+	fmr     fr8,fr0
+	fmr     fr9,fr0
+	fmr     fr10,fr0
+	fmr     fr11,fr0
+	fmr     fr12,fr0
+	fmr     fr13,fr0
+	fmr     fr14,fr0
+	fmr     fr15,fr0
+	fmr     fr16,fr0
+	fmr     fr17,fr0
+	fmr     fr18,fr0
+	fmr     fr19,fr0
+	fmr     fr20,fr0
+	fmr     fr21,fr0
+	fmr     fr22,fr0
+	fmr     fr23,fr0
+	fmr     fr24,fr0
+	fmr     fr25,fr0
+	fmr     fr26,fr0
+	fmr     fr27,fr0
+	fmr     fr28,fr0
+	fmr     fr29,fr0
+	fmr     fr30,fr0
+	fmr     fr31,fr0
+	mtfsf   255,fr0
+
+	# Return
 	blr
