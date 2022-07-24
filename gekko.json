@@ -5,16 +5,19 @@
   "env": "newlib",
   "exe-suffix": ".elf",
   "executables": true,
-  "features": "+hard-float",
   "has-rpath": true,
-  "linker": "rust-lld",
-  "linker-flavor": "ld.lld",
-  "linker-is-gnu": false,
+  "linker": "powerpc-eabi-gcc",
+  "linker-flavor": "gcc",
+  "linker-is-gnu": true,
   "llvm-target": "powerpc-unknown-eabi",
   "panic-strategy": "abort",
   "pre-link-args": {
-    "ld.lld": [
-      "-Tlinker.ld"
+    "gcc": [
+      "-O2",
+      "-DGEKKO",
+      "-mogc",
+      "-meabi",
+      "-mhard-float"
     ]
   },
   "relocation-model": "static",

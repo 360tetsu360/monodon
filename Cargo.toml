@@ -3,3 +3,9 @@ members = [
   "os-core",
   "monodon"
 ]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

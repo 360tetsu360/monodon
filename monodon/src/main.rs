@@ -2,12 +2,8 @@
 #![no_main]
 #![feature(asm_experimental_arch)]
 
-use core::{
-    arch::{self, global_asm},
-    panic::PanicInfo,
-};
-
-global_asm!(include_str!("init.s"));
+use core::panic::PanicInfo;
+mod asm;
 
 /*
 extern "C" fn main() {
