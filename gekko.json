@@ -12,11 +12,11 @@
   "linker-is-gnu": true,
   "llvm-target": "powerpc-unknown-eabi",
   "panic-strategy": "abort",
-  "os" : "gc",
   "pre-link-args": {
     "gcc": [
       "-O2",
       "-DGEKKO",
+      "-mogc",
       "-meabi",
       "-mhard-float"
     ]
