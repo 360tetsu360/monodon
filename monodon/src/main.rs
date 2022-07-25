@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(asm_experimental_arch)]
+#![feature(core_intrinsics)]
 
 use core::panic::PanicInfo;
 mod argv;

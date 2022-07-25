@@ -93,3 +93,98 @@ L2Enabled:
 	addi    %r1, %r1, 16
 	mtlr    %r0
 	blr
+
+	.globl build_argv
+build_argv:
+	lwz     %r9,4(%r3)
+	li      %r5,0
+	lwz     %r10,8(%r3)
+	add     %r7,%r9,%r10
+	addi    %r10,%r10,-1
+	addi    %r7,%r7,4
+	add     %r8,%r9,%r10
+	rlwinm  %r7,%r7,0,0,29
+	mr      %r11,%r7
+
+1:	stw     %r9,0(%r7)
+	mr      %r4,%r5
+	addi    %r5,%r5,1
+	lbz     %r10,0(%r9)
+	cmpwi   %r10,0
+	beq     6f
+	cmplw   %r9,%r8
+	bge     6f
+	subf    %r10,%r9,%r8
+	andi.   %r6,%r10,3
+	beq     4f
+	cmpwi   %r6,1
+	beq     3f
+	cmpwi   %r6,2
+	beq     2f
+	lbzu    %r6,1(%r9)
+	cmpwi   %r6,0
+	beq     6f
+
+2:	lbzu    %r6,1(%r9)
+	cmpwi   %r6,0
+	beq     6f
+
+3:	lbzu    %r6,1(%r9)
+	cmpwi   %r6,0
+	beq     6f
+	cmplw   %r8,%r9
+	beq     6f
+
+4:	rlwinm  %r10,%r10,30,2,31
+	mtctr   %r10
+
+5:	lbz     %r6,1(%r9)
+	addi    %r9,%r9,1
+	mr      %r10,%r9
+	cmpwi   %r6,0
+	beq     6f
+	lbzu    %r6,1(%r9)
+	cmpwi   %r6,0
+	beq     6f
+	lbz     %r6,2(%r10)
+	addi    %r9,%r10,2
+	cmpwi   %r6,0
+	beq     6f
+	lbz     %r6,3(%r10)
+	addi    %r9,%r10,3
+	cmpwi   %r6,0
+	beq     6f
+	bdnz    .
+
+6:	addi    %r9,%r9,1
+	addi    %r7,%r7,4
+	cmplw   %r8,%r9
+	bgt     1f
+	addi    %r9,%r4,2
+	li      %r6,0
+	rlwinm  %r9,%r9,2,0,29
+	rlwinm  %r10,%r5,2,0,29
+	add     %r9,%r11,%r9
+	li      %r7,0
+	stb     %r6,0(%r8)
+	stwx    %r7,%r11,%r10
+	stw     %r9,20(%r3)
+	stw     %r11,16(%r3)
+	stw     %r5,12(%r3)
+	blr
+
+
+	.globl _memset
+_memset:
+	clrlwi.	%r6,%r5,29
+	srwi	%r5,%r5,2
+	subi	%r3,%r3,4
+	mtctr	%r5
+1:	stwu	%r4,4(%r3)
+	bdnz	1b
+	cmplwi	%r6,0
+	beq		3f
+2:	stbu	%r4,1(%r3)
+	addic.	%r6,%r6,-1
+	bne+	2b
+3:	blr

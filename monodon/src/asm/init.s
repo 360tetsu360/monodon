@@ -20,6 +20,32 @@ _startup:
   bl _init_grps
 	bl _init_hardware
 	bl _init_system
+
+	bl _check_argv
+
+	lis		%r3,__isIPL@h
+	ori		%r3,%r3,__isIPL@l
+	cmplwi	%r3,0
+	bne		1f
+
+	# Clear the SBSS section!
+	lis		%r3,__sbss_start@h
+	ori		%r3,%r3,__sbss_start@l
+	li		%r4,0
+	lis		%r5,__sbss_end@h
+	ori		%r5,%r5,__sbss_end@l
+	sub		%r5,%r5,%r3
+	bl		_memset
+
+	# Clear the BSS section!
+	lis		%r3,__bss_start@h
+	ori		%r3,%r3,__bss_start@l
+	li		%r4,0
+	lis		%r5,__bss_end@h
+	ori		%r5,%r5,__bss_end@l
+	sub		%r5,%r5,%r3
+	bl		_memset
+
 	
 _init_bats:
 	mflr	%r31

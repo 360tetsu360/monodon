@@ -1,5 +1,7 @@
 [build]
 target = "gekko.json"
+rustflags = "-Clink-arg=-Tgc.ld"
 
 [unstable]
-build-std = ["core", "alloc"]
+build-std-features = ["compiler-builtins-mem"]
+build-std = ["core", "compiler_builtins", "alloc"]
