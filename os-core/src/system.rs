@@ -1,9 +1,15 @@
-use crate::processor::{_cpu_isr_disable, _cpu_isr_restore};
+use mmacro::no_isr;
+
+extern "C" {
+    static __gxregs: *const u8;
+    static __text_start: *const u8;
+    static __isIPL: *const u8;
+    static __Arena1Lo: *const u8;
+    static __Arena1Hi: *const u8;
+}
 
 #[export_name = "_sys_init"]
+#[no_isr]
 unsafe extern "C" fn sys_init() {
-    let mut _level: u32 = 0;
-    _cpu_isr_disable!(_level);
     //somecode
-    _cpu_isr_restore!(_level);
 }

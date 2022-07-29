@@ -5,5 +5,4 @@
 
 mod argv;
 mod asm;
-mod processor;
 mod system;

@@ -1,7 +1,8 @@
 [workspace]
 members = [
   "os-core",
-  "monodon"
+  "monodon",
+  "mmacro",
 ]
 
 [profile.dev]
